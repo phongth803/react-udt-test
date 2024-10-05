@@ -1,14 +1,19 @@
-import express from "express";
-import React from "react";
-import ReactDOMServer from "react-dom/server";
-import App from "../components/App";
+import express from 'express'
+import React from 'react'
+import ReactDOMServer from 'react-dom/server'
+import App from '../components/App'
+import { StaticRouter } from 'react-router-dom/server'
 
-const app = express();
+const app = express()
 
-app.use(express.static("dist"));
+app.use(express.static('dist'))
 
-app.get("/", (req, res) => {
-  const appHtml = ReactDOMServer.renderToString(<App />);
+app.get('*', (req, res) => {
+  const appHtml = ReactDOMServer.renderToString(
+    <StaticRouter location={req.url}>
+      <App />
+    </StaticRouter>
+  )
   const html = `
     <!DOCTYPE html>
     <html lang="en">
@@ -22,11 +27,10 @@ app.get("/", (req, res) => {
       <script src="script.js"></script> <!-- Client-side script -->
     </body>
     </html>
-  `;
-  res.send(html); // Send the HTML back to the client
-});
+  `
+  res.send(html)
+})
 
-// Start the server on port 3000
 app.listen(3000, () => {
-  console.log("Server is listening on http://localhost:3000");
-});
+  console.log('Server is listening on http://localhost:3000')
+})
