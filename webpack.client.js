@@ -1,5 +1,5 @@
 const path = require('path')
-const { mode } = require('./webpack.server')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
   mode: 'development',
@@ -14,9 +14,25 @@ module.exports = {
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/
+      },
+      {
+        test: /\.scss$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
+      },
+      {
+        test: /\.ico$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'favicon.ico'
+        }
       }
     ]
   },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: 'style.css'
+    })
+  ],
   resolve: {
     extensions: ['.tsx', '.ts', '.js']
   }
