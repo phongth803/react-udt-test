@@ -18,13 +18,15 @@ app.get('*', (req, res) => {
     <!DOCTYPE html>
     <html lang="en">
     <head>
+      <link rel="icon" href="/favicon.ico" />
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>SSR with React</title>
+      <title>Calculator</title>
+      <link rel="stylesheet" href="style.css" />
     </head>
     <body>
-      <div id="root">${appHtml}</div> <!-- This is where the React app gets injected -->
-      <script src="script.js"></script> <!-- Client-side script -->
+      <div id="root">${appHtml}</div> 
+      <script src="script.js"></script>
     </body>
     </html>
   `
