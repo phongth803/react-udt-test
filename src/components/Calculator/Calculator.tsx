@@ -23,38 +23,66 @@ function Calculator(props: CalculatorProps) {
 
   const calculate = (value: string) => {
     try {
-      if (ops.includes(value) && value.length === 1) {
-        setCurrentValue('0')
-        return
-      }
+      value = value.replace(/--/g, '+')
       if (ops.includes(value.slice(-1))) {
         value = value.slice(0, -1) + value.slice(-1) + value.slice(0, -1)
-      }
-      if (ops.includes(value[0])) {
-        value = value.slice(1) + value[0] + value.slice(1)
       }
       const result = eval(value)
       const formattedResult = formatResult(result)
       setCurrentValue(formattedResult.toString())
-      handleChangeHistory(value + ' = ' + formattedResult)
+      return formattedResult
     } catch (error) {
       setCurrentValue('Error')
     }
   }
 
   const handlePersentage = (value: string) => {
+    if (ops.includes(value.slice(-1))) {
+      setCurrentValue(value.slice(0, -1) + value.slice(-1) + (parseFloat(eval(value.slice(0, -1))) / 100).toString())
+      return
+    }
+    if (value.includes('+') || value.includes('-') || value.includes('*') || value.includes('/')) {
+      const lastNumber = value.split(/[\+\-\*\/]/).pop()
+      if (lastNumber) {
+        setCurrentValue(value.slice(0, -lastNumber.length) + (parseFloat(lastNumber) / 100).toString())
+        return
+      }
+    }
     const result = (parseFloat(eval(value)) / 100).toString()
     handleChangeHistory(value + ' % = ' + result)
     setCurrentValue(formatResult(parseFloat(result)))
   }
 
   const handleComma = () => {
+    if (currentValue === 'Infinity' || currentValue === 'Error') {
+      setCurrentValue('0.')
+      return
+    }
     const lastNumber = currentValue.split(/[\+\-\*\/]/).pop()
     if (lastNumber?.includes('.') || ops.includes(currentValue.slice(-1))) {
       return
     }
 
     setCurrentValue(currentValue + '.')
+  }
+
+  const handlePlusMinus = (value: string) => {
+    if (currentValue === 'Infinity' || currentValue === 'Error') {
+      setCurrentValue('0')
+      return
+    }
+    if (ops.includes(value.slice(-1)) && !ops.includes(value.slice(-2, -1))) {
+      setCurrentValue(value + '-')
+      return
+    }
+    if (value.includes('+') || value.includes('-') || value.includes('*') || value.includes('/')) {
+      const lastNumber = value.split(/[\+\-\*\/]/).pop()
+      if (lastNumber) {
+        setCurrentValue(value.slice(0, -lastNumber.length) + (parseFloat(eval(lastNumber)) * -1).toString())
+        return
+      }
+    }
+    setCurrentValue((parseFloat(eval(value)) * -1).toString())
   }
 
   const handleOperator = (operator: string) => {
@@ -64,11 +92,10 @@ function Calculator(props: CalculatorProps) {
     ) {
       return
     }
-    if (currentValue === '0') {
-      setCurrentValue(operator)
+    if (currentValue === 'Infinity' || currentValue === 'Error') {
+      setCurrentValue('0' + operator)
       return
     }
-
     setCurrentValue(currentValue + operator)
   }
 
@@ -85,7 +112,7 @@ function Calculator(props: CalculatorProps) {
         setCurrentValue('0')
         break
       case '+/-':
-        setCurrentValue((parseFloat(eval(currentValue)) * -1).toString())
+        handlePlusMinus(currentValue)
         break
       case '%':
         handlePersentage(currentValue)
@@ -103,7 +130,7 @@ function Calculator(props: CalculatorProps) {
         handleOperator('+')
         break
       case '=':
-        calculate(currentValue)
+        handleChangeHistory(currentValue + ' = ' + calculate(currentValue))
         break
       default:
         if (
@@ -112,7 +139,7 @@ function Calculator(props: CalculatorProps) {
         ) {
           return
         }
-        if (currentValue === '0' && value !== '.') {
+        if ((currentValue === '0' && value !== '.') || currentValue === 'Infinity' || currentValue === 'Error') {
           setCurrentValue(value)
         } else {
           setCurrentValue(currentValue + value)

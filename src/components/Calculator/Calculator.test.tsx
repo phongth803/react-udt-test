@@ -149,7 +149,7 @@ describe('Calculator Component', () => {
     )
     fireEvent.click(screen.getByText('÷'))
     fireEvent.click(screen.getByText('='))
-    expect(screen.getByPlaceholderText('0')).toHaveValue('0')
+    expect(screen.getByPlaceholderText('0')).toHaveValue('NaN')
   })
 
   test('should perform percentage operation', () => {
@@ -295,5 +295,51 @@ describe('Calculator Component', () => {
     fireEvent.click(screen.getByText('5'))
     fireEvent.click(screen.getByText('%'))
     expect(handleChangeHistory).toHaveBeenCalledWith('5 % = 0.05')
+  })
+
+  test('should handle percentage display correctly', () => {
+    render(
+      <MemoryRouter>
+        <Calculator handleChangeHistory={handleChangeHistory} />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByText('4'))
+    fireEvent.click(screen.getByText('−'))
+    fireEvent.click(screen.getByText('%'))
+    expect(screen.getByPlaceholderText('0')).toHaveValue('4-0.04')
+    fireEvent.click(screen.getByText('%'))
+    expect(screen.getByPlaceholderText('0')).toHaveValue('4-0.0004')
+  })
+
+  test('should handle plus minus correctly', () => {
+    render(
+      <MemoryRouter>
+        <Calculator handleChangeHistory={handleChangeHistory} />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByText('9'))
+    fireEvent.click(screen.getByText('÷'))
+    fireEvent.click(screen.getByText('0'))
+    fireEvent.click(screen.getByText('='))
+    expect(screen.getByPlaceholderText('0')).toHaveValue('Infinity')
+    fireEvent.click(screen.getByText('+/-'))
+    expect(screen.getByPlaceholderText('0')).toHaveValue('0')
+    fireEvent.click(screen.getByText('4'))
+    fireEvent.click(screen.getByText('+'))
+    fireEvent.click(screen.getByText('4'))
+    fireEvent.click(screen.getByText('+/-'))
+    expect(screen.getByPlaceholderText('0')).toHaveValue('4+-4')
+  })
+  test('should handle plus-minus correctly when the last character is an operator', () => {
+    render(
+      <MemoryRouter>
+        <Calculator handleChangeHistory={handleChangeHistory} />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByText('4'))
+    fireEvent.click(screen.getByText('+'))
+    fireEvent.click(screen.getByText('+/-'))
+    fireEvent.click(screen.getByText('4'))
+    expect(screen.getByPlaceholderText('0')).toHaveValue('4+-4')
   })
 })
