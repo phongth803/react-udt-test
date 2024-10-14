@@ -4,6 +4,8 @@ import ReactDOMServer from 'react-dom/server'
 import App from '../components/App'
 import { StaticRouter } from 'react-router-dom/server'
 
+const PORT = process.env.PORT || 3000
+
 const app = express()
 
 app.use(express.static('dist'))
@@ -33,6 +35,6 @@ app.get('*', (req, res) => {
   res.send(html)
 })
 
-app.listen(3000, () => {
+app.listen(PORT, () => {
   console.log('Server is listening on http://localhost:3000')
 })
