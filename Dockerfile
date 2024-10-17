@@ -28,8 +28,8 @@ COPY --from=builder /app /app
 # Install production dependencies
 RUN npm install --production
 
-# Expose port 3000 (or any port your app uses)
-EXPOSE 3000
+# Expose port 
+EXPOSE 8080
 
 # Start the Node.js application
 CMD ["npm", "start"]
