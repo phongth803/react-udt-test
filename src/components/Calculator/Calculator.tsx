@@ -75,10 +75,13 @@ function Calculator(props: CalculatorProps) {
       setCurrentValue(value + '-')
       return
     }
+    if (ops.includes(value.slice(-1)) && ops.includes(value.slice(-2, -1))) {
+      return
+    }
     if (value.includes('+') || value.includes('-') || value.includes('*') || value.includes('/')) {
-      const lastNumber = value.split(/[\+\-\*\/]/).pop()
+      const lastNumber = value.split(/(?<=[0-9])[\+\-\*\/]/).pop()
       if (lastNumber) {
-        setCurrentValue(value.slice(0, -lastNumber.length) + (parseFloat(eval(lastNumber)) * -1).toString())
+        setCurrentValue(value.slice(0, -lastNumber.length) + (parseFloat(lastNumber) * -1).toString())
         return
       }
     }
